@@ -2,29 +2,17 @@ package main
 
 import "fmt"
 
-func binarySearch(v int,ar ...int) bool {
-	
-	low:=0
-	high:= len(ar)-1
-	
-	for low<=high {
-		mid:= (low+high)/2
-	
-		if ar[mid] == v {
-			return true
-		} else if ar[mid] < v {
-			low = mid+1
-		}else if ar[mid]> v {
-			high = mid -1
+func main() {
+	ar := []int{20, 32, 34, 2, 3, 45, 2, 55, 23, 10}
+
+	fmt.Println(ar)
+
+	for i := 0; i < len(ar)-1; i++ {
+		for j := 0; j < len(ar)-i-1; j++ {
+			if ar[j] > ar[j+1] {
+				ar[j], ar[j+1] = ar[j+1], ar[j]
+			}
 		}
-		
-		
 	}
 	fmt.Println(ar)
-	return false
-}
-
-func main(){
-	ar := []int{1,2, 9, 20, 31, 45, 63, 70, 100}
-	fmt.Println( binarySearch(70, ar...))
 }
