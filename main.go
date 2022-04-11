@@ -2,36 +2,63 @@ package main
 
 import "fmt"
 
-type Queue struct {
-	items []int
+type Node struct {
+	key   int
+	left  *Node
+	right *Node
 }
 
-func (q *Queue) enqueue(a int) {
-	q.items = append(q.items, a)
+func (n *Node) insert(val int) {
+
+	if n.key < val {
+		if n.right == nil {
+			n.right = &Node{key: val}
+		} else {
+			n.right.insert(val)
+		}
+	} else if n.key > val {
+		if n.left == nil {
+			n.left = &Node{key: val}
+		} else {
+			n.left.insert(val)
+		}
+	}
 }
 
-func (q *Queue) dequeue() int {
-	val := q.items[0]
-	q.items = q.items[1:]
-	return val
+func (n *Node) inOrderTraversal(){
+	if n!= nil {
+		n.left.inOrderTraversal();
+		fmt.Print(n.key, " ")
+		n.right.inOrderTraversal();
+	}
 }
 
-func main(){
-	myQueue := Queue{}
-	fmt.Println(myQueue)
-	myQueue.enqueue(10)
-	myQueue.enqueue(20)
-	myQueue.enqueue(30)
-	myQueue.enqueue(40)
-	fmt.Println(myQueue)
-	
-	fmt.Println(myQueue.dequeue())
-	
-	fmt.Println(myQueue)
-	
-	fmt.Println(myQueue.dequeue())
-	fmt.Println(myQueue.dequeue())
-	
-	fmt.Println(myQueue)
+func (n *Node) preOrderTraversal(){
+	if n!= nil {
+		fmt.Print(n.key, " ")
+		n.left.inOrderTraversal();
+		n.right.inOrderTraversal();
+	}
+}
 
+func (n *Node) postOrderTraversal(){
+	if n!= nil {
+		n.left.inOrderTraversal();
+		n.right.inOrderTraversal();
+		fmt.Print(n.key, " ")
+	}
+}
+
+
+func main() {
+	tree := Node{key: 50}
+	tree.insert(20)
+	tree.insert(40)
+	tree.insert(10)
+	tree.insert(11)
+	tree.inOrderTraversal()
+	fmt.Println()
+	tree.preOrderTraversal()
+	fmt.Println()
+	tree.postOrderTraversal()
 }
