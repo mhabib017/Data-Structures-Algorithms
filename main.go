@@ -2,26 +2,36 @@ package main
 
 import "fmt"
 
-type stack struct {
+type Queue struct {
 	items []int
 }
 
-func (s *stack) push(a int){
-	s.items = append(s.items, a)
+func (q *Queue) enqueue(a int) {
+	q.items = append(q.items, a)
 }
-func (s *stack) pop() int {
-	l := len(s.items)-1
-	val := s.items[l]
-	s.items = s.items[:l]
+
+func (q *Queue) dequeue() int {
+	val := q.items[0]
+	q.items = q.items[1:]
 	return val
 }
 
 func main(){
-	myStack := stack{}
-	myStack.push(10)
-	myStack.push(20)
-	myStack.push(30)
-	fmt.Println(myStack)
-	fmt.Println(myStack.pop())
-	fmt.Println(myStack)
+	myQueue := Queue{}
+	fmt.Println(myQueue)
+	myQueue.enqueue(10)
+	myQueue.enqueue(20)
+	myQueue.enqueue(30)
+	myQueue.enqueue(40)
+	fmt.Println(myQueue)
+	
+	fmt.Println(myQueue.dequeue())
+	
+	fmt.Println(myQueue)
+	
+	fmt.Println(myQueue.dequeue())
+	fmt.Println(myQueue.dequeue())
+	
+	fmt.Println(myQueue)
+
 }
