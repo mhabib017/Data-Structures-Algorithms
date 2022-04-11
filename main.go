@@ -2,19 +2,42 @@ package main
 
 import "fmt"
 
-func main() {
-	ar := []int{20, 32, 34, 2, 3, 45, 2, 55, 23, 10}
-	fmt.Println(ar)
-
-	for i:=1; i< len(ar); i++{
-		key:= ar[i]
-		j := i-1
-		for j>=0 && ar[j]>key {
-			ar[j+1] = ar[j]
-			j--
-		}
-		ar[j+1] = key
+func mergeSort(items []int) []int {
+	if len(items) < 2 {
+		return items
 	}
-	fmt.Println(ar)
+	first := mergeSort(items[:len(items)/2])
+	second := mergeSort(items[len(items)/2:])
+	return merge(first, second)
+}
 
+func merge(a []int, b []int) []int {
+	final := []int{}
+	i := 0
+	j := 0
+
+	for i < len(a) && j < len(b) {
+		if a[i] < b[j] {
+			final = append(final, a[i])
+			i++
+		} else {
+			final = append(final, b[j])
+			j++
+		}
+	}
+
+	for ; i < len(a); i++ {
+		final = append(final, a[i])
+	}
+	for ; j < len(b); j++ {
+		final = append(final, b[j])
+	}
+	return final
+}
+
+func main() {
+	unsorted := []int{10, 6, 2, 1, 5, 8, 3, 4, 7, 9}
+	fmt.Println(unsorted)
+	sorted := mergeSort(unsorted)
+	fmt.Println(sorted)
 }
