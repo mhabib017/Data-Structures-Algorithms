@@ -1,100 +1,56 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt" 
 
-const ARRAY_SIZE = 5
-
-type HashTable struct {
-	array [ARRAY_SIZE]*Bucket
+type Node struct {
+	children [26]*Node
+	isEnd bool
 }
 
-func (h *HashTable) insert(key string){
-	index:= hash(key)
-	h.array[index].insert(key)
+type Trie struct {
+	root *Node
 }
 
-func (h HashTable) search(key string)bool {
-	index:= hash(key)
-	return h.array[index].search(key)
+func InitTie() *Trie {
+	trie:= Trie{root: &Node{}}
+	return &trie
 }
 
-func (h *HashTable) delete(key string)  {
-	index:= hash(key)
-	h.array[index].delete(key)
-}
-
-
-type Bucket struct {
-	head *BucketNode
-}
-
-type BucketNode struct{
-	key string
-	next *BucketNode
-}
-
-func (b *Bucket) insert(key string){
-	
-	newNode := BucketNode{key:key}
-	newNode.next = b.head
-	b.head = &newNode
-	
-}
-
-func (b *Bucket) delete(key string) {
-	if b.head.key == key {
-		b.head = b.head.next
-		return
-	}
-	previousToDelete := b.head
-	for previousToDelete.next != nil {
-		if previousToDelete.next.key == key{
-			previousToDelete.next = previousToDelete.next.next
-			return
+func (t *Trie) insert(w string) {
+	wordLength:= len(w)
+	currentNode:= t.root
+	for i:=0; i< wordLength; i++{
+		currentIndex:= w[i]- 'a'
+		if currentNode.children[currentIndex] == nil {
+			currentNode.children[currentIndex] = &Node{}
 		}
-		previousToDelete = previousToDelete.next
+		currentNode = currentNode.children[currentIndex]
 	}
+	currentNode.isEnd = true
 }
 
-func (b Bucket) search(key string) bool{
-	current:= b.head
-	for current != nil {
-		if current.key == key {
-			return true
+func (t *Trie) search(w string) bool {
+	wordLength:= len(w)
+	currentNode:= t.root
+	for i:=0; i< wordLength; i++{
+		currentIndex:= w[i]- 'a'
+		if currentNode.children[currentIndex] == nil {
+			return false
 		}
-		current = current.next
+		currentNode = currentNode.children[currentIndex]
+	}
+	if currentNode.isEnd == true {
+		return true
 	}
 	return false
 }
 
 
-func initHashTable() *HashTable{
-	hashTable:= HashTable{}
-	for i:= range  hashTable.array{
-		hashTable.array[i] = &Bucket{}
-	}
-	return &hashTable
-}
-
-func hash(key string) int{
-	sum:=0
-	for i:= range key{
-		sum+= int(i)
-	}
-	return sum % ARRAY_SIZE
-}
-
-func main() {
-	hashTable := initHashTable()
-
-	hashTable.insert("Randy")
-	hashTable.insert("Randy")
-	hashTable.insert("Eric")
-	fmt.Println(hashTable.search("Randy"))
-	hashTable.delete("Randy")
-	fmt.Println(hashTable.search("Randy"))
-	fmt.Println(hashTable.search("Ben"))
-
+func  main()  {
+	trie:= InitTie()
+	trie.insert("habib")
+	trie.insert("happy")
+	fmt.Println(trie.search("happy"))
+	fmt.Println(trie.search("happyy"))
+	fmt.Println(trie.search("happ"))
 }
