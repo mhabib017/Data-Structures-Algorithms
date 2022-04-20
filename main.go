@@ -2,42 +2,38 @@ package main
 
 import "fmt"
 
-func mergeSort(items []int) []int {
-	if len(items) < 2 {
-		return items
-	}
-	first := mergeSort(items[:len(items)/2])
-	second := mergeSort(items[len(items)/2:])
-	return merge(first, second)
-}
-
-func merge(a []int, b []int) []int {
-	final := []int{}
-	i := 0
-	j := 0
-
-	for i < len(a) && j < len(b) {
-		if a[i] < b[j] {
-			final = append(final, a[i])
-			i++
-		} else {
-			final = append(final, b[j])
-			j++
+func binarySearch( item, low,high int, arr ...int) int {
+	if high <= low {
+		if item > arr[low] {
+			return low+1
+		}else {
+			return low
 		}
 	}
 
-	for ; i < len(a); i++ {
-		final = append(final, a[i])
+	mid := (low + high)/2;
+	if item == arr[mid]  {
+		return mid+1;
 	}
-	for ; j < len(b); j++ {
-		final = append(final, b[j])
+	if item > arr[mid] {
+		return binarySearch(item, mid+1, high, arr...);
 	}
-	return final
+	return binarySearch(item, low, mid-1, arr...);
 }
 
 func main() {
-	unsorted := []int{10, 6, 2, 1, 5, 8, 3, 4, 7, 9}
-	fmt.Println(unsorted)
-	sorted := mergeSort(unsorted)
-	fmt.Println(sorted)
+	ar := []int{20, 32, 34, 2, 3, 45, 2, 55, 23, 10}
+	fmt.Println(ar)
+
+	for i:=1; i< len(ar); i++{
+		key:= ar[i]
+		j := i-1
+		loc:= binarySearch(key, 0, j, ar...)
+		for j>=loc {
+			ar[j+1] = ar[j]
+			j--
+		}
+		ar[j+1]= key
+	}
+	fmt.Println(ar)
 }
