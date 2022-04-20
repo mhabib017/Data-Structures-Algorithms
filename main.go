@@ -2,88 +2,154 @@ package main
 
 import "fmt"
 
-type MaxHeap struct {
-	array []int
+
+type Queue struct {
+	items []*Vertex
 }
 
-func (h *MaxHeap) insert(key int) {
-	h.array = append(h.array, key)
-	h.maxHeapifyUp( len(h.array)-1)
+func (q *Queue) enqueue(v *Vertex){
+	q.items = append(q.items, v)
 }
 
-func (h *MaxHeap) maxHeapifyUp(index int){
-	for h.array[parent(index)] < h.array[index]{
-		h.swap(parent(index), index)
-		index = parent(index)
+func (q *Queue) dequeue() *Vertex{
+	if len(q.items) ==0 {
+		return nil
+	}
+	v:= q.items[0]
+	q.items = q.items[1:]
+	return v
+
+}
+
+type Stack struct {
+	items []*Vertex
+}
+
+func (s *Stack) push(v *Vertex){
+	s.items = append(s.items, v)
+}
+
+func (s *Stack) pop() *Vertex{
+	if len(s.items) ==0 {
+		return nil
+	}
+	l:= len(s.items)-1
+	v:= s.items[l]
+	s.items = s.items[:l]
+	return v
+}
+
+
+
+type Graph struct {
+	vertices []*Vertex
+}
+
+type Vertex struct {
+	key int
+	adjacent []*Vertex
+}
+
+func (g *Graph) addVertice(key int){
+
+	if contains(g.vertices, key) {
+		fmt.Println("Duplicate Vertex : ", key)
+		return
+	}
+	g.vertices = append(g.vertices, &Vertex{key: key})
+}
+
+func (g *Graph) addEdge(from, to int){
+	fromVertex:= g.getVertice(from)
+	toVertex:= g.getVertice(to)
+
+	if fromVertex == nil || toVertex == nil {
+		fmt.Printf("\n Invalid Edge %d->%d", from, to);
+	}else if contains(fromVertex.adjacent, to) {
+		fmt.Printf("\n Existing Edge %d->%d", from, to);
+	}else {
+		fromVertex.adjacent = append(fromVertex.adjacent, toVertex)
+	}
+
+}
+
+func contains(s []*Vertex, key int) bool {
+	for _, v:= range s {
+		if v.key == key {
+			return true
+		}
+	}
+	return false
+}
+
+func (g *Graph) getVertice(key int) *Vertex {
+	for i, v:= range g.vertices {
+		if v.key == key {
+			return g.vertices[i]
+		}
+	}
+	return nil
+}
+
+func (g *Graph) print(){
+	for _,v := range g.vertices {
+		fmt.Print("\n", v.key, ":")
+		for _,v:= range v.adjacent {
+			fmt.Print(" ", v.key)
+		}
 	}
 }
 
-func parent(index int) int {
-	return (index-1)/2
-}
-
-func left(index int) int {
-	return 2*index +1
-}
-
-func right(index int) int {
-	return 2*index +2
-}
-
-func (h *MaxHeap) swap(indexOne, indexTwo int){
-	h.array[indexOne], h.array[indexTwo] = h.array[indexTwo], h.array[indexOne]
-}
-
-func (h *MaxHeap) extract() int {
-	extracted:= h.array[0]
-	l:= len(h.array)-1
-	if len(h.array) == 0 {
-		fmt.Println("can not extract becausue array is empty.")
-		return -1
+func (g *Graph) bfs(){
+	q:= Queue{}
+	visited:= make([]int,0)
+	q.enqueue(g.vertices[0])
+	for len(q.items) >0 {
+		n:= q.dequeue()
+		visited = append(visited, n.key)
+		for _, v:= range n.adjacent {
+			q.enqueue(v)
+		}
 	}
-	h.array[0]= h.array[l]
-	h.array = h.array[:l]
+	fmt.Println("BFS: ", visited)
+}
+
+func (g *Graph) dfs(){
+	s:= Stack{}
+	visited:= make([]int,0)
+	s.push(g.vertices[0])
+	for len(s.items) >0 {
+		n:= s.pop()
+		visited = append(visited, n.key)
 	
-	h.maxHeapifyDown(0)
-	return extracted
-}
-
-func (h *MaxHeap) maxHeapifyDown(index int){
-	lastIndex:= len(h.array) -1
-	l, r := left(index), right(index)
-	childToCompare:=0
-
-	for l<= lastIndex {
-		if l == lastIndex {
-			childToCompare = l
-		} else if h.array[l] > h.array[r] {
-			childToCompare = l
-		} else {
-			childToCompare = r
-		}
-
-		if h.array[index] < h.array[childToCompare] {
-			h.swap(index, childToCompare)
-			index = childToCompare
-			l, r = left(index), right (index)
-		}else {
-			return
+		for _, v:= range n.adjacent {
+			s.push(v)
 		}
 	}
+	fmt.Println("DFS: ", visited)
 }
+
 
 
 func main(){
-	heap:= MaxHeap{}
-	ar:= []int{10,20,30, 7,4,3,23,33}
-	fmt.Println(heap)
-	for _, v:=range ar{
-		heap.insert(v)
-		fmt.Println(heap)
-	}
+	graph := &Graph{}
+	graph.addVertice(1)
+	graph.addVertice(2)
+	graph.addVertice(3)
+	graph.addVertice(4)
+	graph.addVertice(5)
+	graph.addVertice(6)
+	graph.addVertice(7)
+	graph.addVertice(7)
 
-	for i:=0; i<=5; i++ {
-		heap.extract()
-		fmt.Println(heap)
-	}
+	graph.addEdge(1,4)
+	graph.addEdge(1,2)
+	graph.addEdge(1,3)
+	graph.addEdge(2,5)
+	graph.addEdge(5,6)
+	graph.addEdge(4,7)
+	graph.print()
+	graph.bfs()
+	graph.dfs()
+
 }
