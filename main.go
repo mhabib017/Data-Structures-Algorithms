@@ -3,15 +3,20 @@ package main
 import "fmt"
 
 
-type Queue struct {
-	items []*Vertex
+type CostVertex struct {
+	cost int
+	vertex *Vertex
 }
 
-func (q *Queue) enqueue(v *Vertex){
+type Queue struct {
+	items []*CostVertex
+}
+
+func (q *Queue) enqueue(v *CostVertex){
 	q.items = append(q.items, v)
 }
 
-func (q *Queue) dequeue() *Vertex{
+func (q *Queue) dequeue() *CostVertex{
 	if len(q.items) ==0 {
 		return nil
 	}
@@ -26,14 +31,14 @@ func (q *Queue) dequeueMin() *Vertex{
 	}
 	min:= q.items[0]
 	for i, v:= range q.items{
-		if min.key > v.key {
+		if min.cost > v.cost {
 			q.items = append(q.items[:i], q.items[i+1:]... )
-			return v
+			return v.vertex
 		}
 		i++
 	}
 	q.items = q.items[1:]
-	return min
+	return min.vertex
 }
 
 type Stack struct {
@@ -150,9 +155,11 @@ func (g *Graph) dijkstraAlgo(){
 		dist[i] = infinity
 	}
 	dist[0]=0
-	for _, v:= range g.vertices {
-			q.enqueue(v)	
-	}
+	// for _, v:= range g.vertices {
+	// 		q.enqueue(v)	
+	// }
+	q.enqueue(&CostVertex{cost: 0, vertex: g.vertices[0]})
+
 	for len(q.items) !=0 {
 		min := q.dequeueMin()
 
@@ -164,7 +171,9 @@ func (g *Graph) dijkstraAlgo(){
 			
 			if dist[indexMin]+ v.cost < dist[indexVertex]{
 				dist[indexVertex] =  dist[indexMin]+ v.cost
+				q.enqueue(&CostVertex{cost: dist[indexVertex], vertex: v.vertex})
 			}
+
 			fmt.Print(" ===> cost changed: ",dist[indexVertex])
 		}
 	}
@@ -180,43 +189,46 @@ func (g *Graph) dijkstraAlgo(){
 func main(){
 
 	g := &Graph{}
-	// graph.addVertice(1)
-	// graph.addVertice(7)
-	// graph.addVertice(2)
-	// graph.addVertice(3)
-	// graph.addVertice(4)
-	// graph.addVertice(5)
-	// graph.addVertice(6)
-	// graph.addVertice(8)
 
-	// graph.addEdge(1,4, 1)
-	// graph.addEdge(1,2, 2)
-	// graph.addEdge(1,3, 3)
-	// graph.addEdge(2,5, 4)
-	// graph.addEdge(5,6, 5)
-	// graph.addEdge(4,7, 6)
-	// graph.addEdge(7,8, 2)
+	/*
+	g.addVertice(1)
+	g.addVertice(7)
+	g.addVertice(2)
+	g.addVertice(3)
+	g.addVertice(4)
+	g.addVertice(5)
+	g.addVertice(6)
+	g.addVertice(8)
 
+	g.addEdge(1,4, 1)
+	g.addEdge(1,2, 2)
+	g.addEdge(1,3, 3)
+	g.addEdge(2,5, 4)
+	g.addEdge(5,6, 5)
+	g.addEdge(4,7, 6)
+	g.addEdge(7,8, 2)
+	g.dijkstraAlgo()
+	*/
 
 	// graph.print()
 
-	// graph.addVertice(1)
-	// graph.addVertice(2)
-	// graph.addVertice(3)
-	// graph.addVertice(4)
-	// graph.addVertice(5)
-	// graph.addVertice(6)
+	g.addVertice(1)
+	g.addVertice(2)
+	g.addVertice(3)
+	g.addVertice(4)
+	g.addVertice(5)
+	g.addVertice(6)
 
-	// graph.addEdge(1,2, 2)
-	// graph.addEdge(1,3, 4)
-	// graph.addEdge(2,4, 7)
-	// graph.addEdge(3,5, 3)
-	// graph.addEdge(2,3, 1)
-	// graph.addEdge(5,4, 2)
-	// graph.addEdge(4,6, 1)
-	// graph.addEdge(5,6, 5)
+	g.addEdge(1,2, 2)
+	g.addEdge(1,3, 4)
+	g.addEdge(2,4, 7)
+	g.addEdge(3,5, 3)
+	g.addEdge(2,3, 1)
+	g.addEdge(5,4, 2)
+	g.addEdge(4,6, 1)
+	g.addEdge(5,6, 5)
 	
-
+/*
 	g.addVertice(0)
 	g.addVertice(1)
 	g.addVertice(2)
@@ -249,6 +261,7 @@ func main(){
 	g.addEdge(6, 3, 4);
 	g.addEdge(6, 4, 1);
 	g.addEdge(6, 5, 1);
+*/
 
 	g.dijkstraAlgo()
 
